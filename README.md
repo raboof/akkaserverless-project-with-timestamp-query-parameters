@@ -38,24 +38,23 @@ To start the application locally, start it from your IDE or use:
 sbt run
 ```
 
-With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://developer.lightbend.com/docs/akka-serverless/java/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
+With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`.
+
+You can ask whether Dolly Parton is working at a particular timestamp:
 
 ```shell
-> curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.CounterService/GetCurrentCounter -d '{"counterId": "foo"}'
-The command handler for `GetCurrentCounter` is not implemented, yet
+> curl localhost:9000/is-dolly-working?at=2022-01-27T16:00:00Z
+{"works":true,"from":"2022-01-27T09:00:00Z","remaining":"3600s"}
 ```
 
-For example, using [`grpcurl`](https://github.com/fullstorydev/grpcurl):
+And whether she still has a given duration on her shift:
 
 ```shell
-> grpcurl -plaintext -d '{"counterId": "foo"}' localhost:9000 com.example.CounterService/GetCurrentCounter 
-ERROR:
-  Code: Unknown
-  Message: The command handler for `GetCurrentCounter` is not implemented, yet
+> curl localhost:9000/is-dolly-working?at=2022-01-27T16:00:00Z\&for=3600s
+{"works":true,"from":"2022-01-27T09:00:00Z","remaining":"3600s"}
+? curl localhost:9000/is-dolly-working?at=2022-01-27T16:00:00Z\&for=3601s
+{"works":false}
 ```
-
-> Note: The failure is to be expected if you have not yet provided an implementation of `GetCurrentCounter` in
-> your entity.
 
 ## Deploying
 

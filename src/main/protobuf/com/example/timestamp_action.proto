@@ -1,0 +1,37 @@
+// Based on https://developer.lightbend.com/docs/akka-serverless/java/actions.html
+// but adapted to show the support for Timestamp and Duration in HTTP query parameters
+
+syntax = "proto3";
+package com.example;
+
+import "google/api/annotations.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+import "akkaserverless/annotations.proto";
+
+message Time {
+    google.protobuf.Timestamp at = 1;
+    google.protobuf.Duration for = 2;
+}
+
+message Schedule {
+    bool works = 1;
+    google.protobuf.Timestamp from = 2;
+    google.protobuf.Duration remaining = 3;
+}
+
+/**
+ * A silly clock that needs to be manually set.
+ */
+service Boss {
+  option (akkaserverless.codegen) = {
+    action: {}  
+  };
+
+  rpc IsDollyWorking(Time) returns (Schedule) {
+      option (google.api.http) = {
+          get: "/is-dolly-working"
+      };
+  }
+}
